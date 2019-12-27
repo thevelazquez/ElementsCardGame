@@ -1,0 +1,23 @@
+{
+  "name": "elementscardgame",
+  "version": "1.0.0",
+  "description": "A multiplayer HTML5 card game",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Batman808401/ElementsCardGame.git"
+  },
+  "author": "Edgardo Velazquez <http://edsvel.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Batman808401/ElementsCardGame/issues"
+  },
+  "homepage": "https://github.com/Batman808401/ElementsCardGame#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0"
+  }
+}
