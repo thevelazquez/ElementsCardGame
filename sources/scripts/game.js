@@ -1,14 +1,8 @@
-const Deck = require('./deck.js');
-const Player = require('./player.js');
-const readline = require('readline')
-const con = readline.createInterface({
-	input: process.stdin,
-	output: process.stdout
-})
+//const Deck = require('./deck.js');
+//const Player = require('./player.js');
 
 class Game {
 	constructor() {
-		let deck = new Deck();
 		this.players = [];
 		this.setPlayers();
 		this.dealCards();
@@ -17,7 +11,7 @@ class Game {
 	setPlayers() {
 		let settingPlayers = true;
 		while (settingPlayers) {
-			let input = "";
+			let input = prompt(`Enter a player name.\nType "done" when all players have been added.`);
 			if (input != "done") {
 				const player = new Player();
 				player.setName(input);
@@ -36,10 +30,12 @@ class Game {
 	dealCards() {
 		for (let i = 0; i<7; i++) {
 			for (let player of this.players) {
-				player.draw(deck.draw())
+				const card = deck.draw();
+				player.draw(card);
 			}
 		}
 	}
 }
 
+let deck = new Deck();
 let game = new Game();
