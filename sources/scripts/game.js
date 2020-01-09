@@ -30,12 +30,13 @@ class Game {
 	dealCards() {
 		for (let i = 0; i<7; i++) {
 			for (let player of this.players) {
-				const card = deck.draw();
-				player.draw(card);
+				//const card = deck.draw();
+				player.draw(deck.draw());
 			}
 		}
+		console.log(`The deck now contains ${deck.count()} cards`);
 	}
 }
 
-let deck = new Deck();
-let game = new Game();
+const deck = new Deck();
+const game = new Game();
