@@ -1,4 +1,8 @@
 var express = require('express');
+var socket = require('socket.io');
+const Game = require('./scripts/game.js');
+
+const game = new Game();
 
 //app setup
 var app = express();
@@ -8,3 +12,8 @@ var server = app.listen(4000, function(){
 
 //Static files
 app.use(express.static('sources'))
+
+var io = socket(server);
+io.on('connection', function(socket){
+	console.log('made a connection', socket.id)
+});
