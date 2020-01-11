@@ -16,4 +16,13 @@ app.use(express.static('sources'))
 var io = socket(server);
 io.on('connection', function(socket){
 	console.log('made a connection', socket.id)
+	socket.emit('name');
+	socket.on('name', (name) => {
+		if (name == null) {
+			socket.emit('name');
+		} else {
+			console.log(`${name} has joined the game!`);
+			game.addPlayer(name);
+		}
+	})
 });
