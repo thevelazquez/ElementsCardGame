@@ -4,6 +4,7 @@ const Player = require('./player.js');
 class Game {
 	constructor() {
 		this.players = [];
+		this.started = false;
 		console.log("A game has started!\nWaiting for players...");
 	}
 	addPlayer(plyr) {
