@@ -1,6 +1,8 @@
 class Player {
 	constructor() {
 		this.hand = [];
+		this.ready = false;
+		this.id = "";
 		this.playerName = "";
 	}
 	draw(card) {

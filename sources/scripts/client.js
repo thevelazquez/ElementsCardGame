@@ -1,6 +1,56 @@
-const ip = `25.21.134.155:4000`;
+//change ip to the host ip
+const ip = `localhost:4000`;
+const nameInput = document.getElementById('entry');
+const nameSubmit = document.getElementById('submitName');
+const entry = document.getElementById('entryBox');
 let socket = io.connect(`http://${ip}`);
-socket.on('name', () => {
-  let name = window.prompt("Enter your player name!", "Your name");
-  socket.emit('name',name);
+let submitable = false;
+let name = () => {return nameInput.value};
+
+let fixWidth = () => {
+  entry.style.width = ((entry.offsetWidth - 40)+"px");
+  entry.style.opacity = "1";
+}
+fixWidth();
+
+const checkInput = () => {
+  if (name() == "") {
+    submitable = false;
+    nameSubmit.style.backgroundColor = "rgb(200, 200, 200)";
+    nameSubmit.style.cursor = "default";
+    console.log("No value")
+  } else {
+    submitable = true;
+    nameSubmit.style.backgroundColor = "rgb(66, 135, 245)";
+    nameSubmit.style.cursor = "pointer";
+  }
+}
+
+const submitName = () => {
+  let pName = name();
+  if (submitable && name() != "") {
+    submitable = false;
+    socket.emit('name', pName);
+    remove(entry);
+  }
+}
+
+const remove = (elem) => {
+
+  elem.style.opacity = "0";
+  setTimeout(()=>{
+    elem.style.width = "0px"
+    elem.style.padding = "0px"
+    setTimeout(()=>{
+      elem.parentNode.removeChild(elem);
+    },1000)
+  },200);
+
+}
+
+socket.on('noName', () => {
+  window.alert("Not a proper name.\nYour entry has not been made.")
+})
+socket.on('lockOut', () => {
+  window.alert("The game has already begun.\nPlease wait for the next one.")
 })
