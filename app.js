@@ -15,6 +15,7 @@ app.use(express.static('sources'))
 
 var io = socket(server);
 io.on('connection', function(socket){
+	socket.emit('getPlayers', game.listPlayers());
 	if (game.started == false) {
 		console.log('made a connection', socket.id)
 		socket.emit('name');
@@ -23,10 +24,17 @@ io.on('connection', function(socket){
 				socket.emit('noName');
 			} else {
 				console.log(`${name} has joined the game!`);
-				game.addPlayer(name);
+				game.addPlayer(name,socket.id);
+				let player = game.getPlayer(socket.id);
+				socket.emit('getId', player.id);
+				io.sockets.emit('getPlayers', game.listPlayers());
 			}
 		})
 	} else {
 		socket.emit('lockOut');
 	}
+	socket.on('isReady', (id) => {
+		game.readyPlayer(id);
+		console.log(game.debugPlayers())
+	})
 });

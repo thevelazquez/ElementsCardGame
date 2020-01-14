@@ -29,6 +29,16 @@ class Player {
 	setName(name) {
 		this.playerName = name;
 	}
+	setId(id) {
+		this.id = id;
+	}
+	toggleReady() {
+		if (this.ready) {
+			this.ready = false
+		} else {
+			this.ready = true
+		}
+	}
 }
 
 module.exports = Player

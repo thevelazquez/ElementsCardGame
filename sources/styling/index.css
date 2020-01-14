@@ -3,6 +3,7 @@ body {
 	padding: 0;
 	font-family: sans-serif;
 	user-select: none;
+	background-color: rgb(100,100,100);
 }
 #game {
 	display: flex;
@@ -27,7 +28,22 @@ body {
 	justify-content: center;
 	margin: 5px;
 }
+#hand {
+	display: flex;
+}
+#playerList {
+	margin: : 20px;
+}
+#readyButton {
+	font-size: 12px;
+	width: 100%;
+	text-align: center;
+	background-color: rgb(200,200,200);
+}
 
+.players {
+	background-color: rgb(255, 185, 179);
+}
 .cards {
 	border-radius: 16px;
 	border-style: solid;

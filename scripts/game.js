@@ -4,25 +4,23 @@ const Player = require('./player.js');
 class Game {
 	constructor() {
 		this.players = [];
+		this.turn = [];
 		this.started = false;
+		this.ready = false;
 		console.log("A game has started!\nWaiting for players...");
 	}
-	addPlayer(plyr) {
+	addPlayer(plyr,id) {
 		const player = new Player();
 		player.setName(plyr);
+		player.setId(id);
 		this.players.push(player);
-
-		if (this.players.length == 3) {
-			console.log("Dealing cards");
-			this.dealCards();
-		}
-
 	}
 	listPlayers() {
-		console.log("The current players are: ");
+		let players = [];
 		for (let player of this.players) {
-			console.log(player.playerName + " holds " + player.showHand());
+			players.push(player.playerName);
 		}
+		return players;
 	}
 	dealCards() {
 		for (let i = 0; i<7; i++) {
@@ -33,8 +31,37 @@ class Game {
 		console.log(`The deck now contains ${deck.count()} cards`);
 	}
 	isReady() {
-		this.dealCards();
-		this.listPlayers();
+		for (let player of this.players) {
+			if (player.ready == true) {
+				this.ready = true;
+			} else {
+				this.ready = false;
+			}
+		}
+		if (this.ready) {
+			this.dealCards();
+		}
+	}
+	getPlayer(id) {
+		for (let player of this.players) {
+			if (player.id == id) {
+				return player;
+			}
+		}
+	}
+	readyPlayer(id) {
+		for (let player of this.players) {
+			if (player.id == id) {
+					player.toggleReady()
+					console.log("toggle")
+			}
+		}
+		console.log(id);
+	}
+	debugPlayers() {
+		for (let player of this.players) {
+			console.log(player);
+		}
 	}
 }
 
