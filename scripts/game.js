@@ -10,10 +10,14 @@ class Game {
 		console.log("A game has started!\nWaiting for players...");
 	}
 	addPlayer(plyr,id) {
-		const player = new Player();
-		player.setName(plyr);
-		player.setId(id);
-		this.players.push(player);
+		if (this.players.length < 8) {
+			const player = new Player();
+			player.setName(plyr);
+			player.setId(id);
+			this.players.push(player);
+		} else {
+			console.log("The game is full");
+		}
 	}
 	listPlayers() {
 		let players = [];
@@ -31,15 +35,19 @@ class Game {
 		console.log(`The deck now contains ${deck.count()} cards`);
 	}
 	isReady() {
-		for (let player of this.players) {
-			if (player.ready == true) {
-				this.ready = true;
-			} else {
-				this.ready = false;
+		if (this.players.length > 2) {
+			for (let player of this.players) {
+				if (player.ready == true) {
+					this.ready = true;
+				} else {
+					this.ready = false;
+				}
 			}
+		} else {
+			console.log("Not enough players");
 		}
 		if (this.ready) {
-			this.dealCards();
+			console.log("The game is ready!")
 		}
 	}
 	getPlayer(id) {
@@ -56,7 +64,7 @@ class Game {
 					console.log("toggle")
 			}
 		}
-		console.log(id);
+		this.isReady();
 	}
 	debugPlayers() {
 		for (let player of this.players) {
