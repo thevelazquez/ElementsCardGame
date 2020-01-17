@@ -5,6 +5,7 @@ class Game {
 	constructor() {
 		this.players = [];
 		this.turn = [];
+		this.clientData = [];
 		this.started = false;
 		this.ready = false;
 		console.log("A game has started!\nWaiting for players...");
@@ -41,6 +42,7 @@ class Game {
 					this.ready = true;
 				} else {
 					this.ready = false;
+					console.log("Not all players are ready")
 				}
 			}
 		} else {
@@ -70,6 +72,13 @@ class Game {
 		for (let player of this.players) {
 			console.log(player);
 		}
+	}
+	getClientData() {
+		this.clientData = [];
+		for (let player of this.players) {
+			this.clientData.push(player.getStats());
+		}
+		return this.clientData;
 	}
 }
 

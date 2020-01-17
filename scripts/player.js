@@ -39,6 +39,14 @@ class Player {
 			this.ready = true
 		}
 	}
+	getStats() {
+		let count = this.handCount();
+		return {
+			name: this.playerName,
+			status: this.ready,
+			handCount: count
+		}
+	}
 }
 
 module.exports = Player

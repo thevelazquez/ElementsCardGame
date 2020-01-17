@@ -35,6 +35,7 @@ io.on('connection', function(socket){
 	}
 	socket.on('isReady', (id) => {
 		game.readyPlayer(id);
+		io.sockets.emit('update', game.getClientData())
 		console.log(game.debugPlayers())
 	})
 });

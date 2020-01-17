@@ -8,7 +8,10 @@ let submitable = false;
 let name = () => {return nameInput.value};
 let user = {};
 let playerList = [];
+let playerData = [];
 let playerDiv = document.getElementById("playerHolder");
+
+let instanceId;
 
 let fixWidth = () => {
   entry.style.width = ((entry.offsetWidth - 40)+"px");
@@ -51,9 +54,24 @@ const remove = (elem) => {
 
 }
 
-const toggleReady = () => {
-  socket.emit('isReady', localStorage.getItem('sessionId'));
+const update = () => {
+  let playerQ = document.getElementsByClassName('players');
+  for (player of playerQ) {
+    if (playerQuerry(player.innerHTML).status) {
+      player.style.backgroundColor = 'rgb(166, 255, 185)';
+    } else {
+      player.style.backgroundColor = 'rgb(255, 185, 179)';
+    }
+  }
 }
+const playerQuerry = (name) => {
+  for (playerObj of playerData) {
+    if (name == playerObj.name) {
+      return playerObj
+    }
+  }
+}
+
 
 socket.on('noName', () => {
   window.alert("Not a proper name.\nYour entry has not been made.")
@@ -61,9 +79,21 @@ socket.on('noName', () => {
 socket.on('lockOut', () => {
   window.alert("The game has already begun.\nPlease wait for the next one.")
 })
+
+const toggleReady = () => {
+  socket.emit('isReady', sessionId)
+  //socket.emit('isReady', localStorage.getItem('sessionId'));
+}
 socket.on('getId', (id) => {
+  //Delete later
+  sessionId = id;
+
   localStorage.setItem('sessionId', id);
   window.alert("Please copy your session ID:\n" + localStorage.getItem('sessionId') + "\n\n(You may need this to join back)");
+})
+socket.on('update', (data) => {
+  playerData = data;
+  update();
 })
 socket.on('getPlayers', (players) =>{
   playerList = players;
