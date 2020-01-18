@@ -42,14 +42,16 @@ class Game {
 					this.ready = true;
 				} else {
 					this.ready = false;
-					console.log("Not all players are ready")
+					console.log("Not all players are ready");
+					break;
 				}
 			}
 		} else {
 			console.log("Not enough players");
 		}
 		if (this.ready) {
-			console.log("The game is ready!")
+			console.log("The game is ready!");
+			this.dealCards();
 		}
 	}
 	getPlayer(id) {
@@ -60,12 +62,14 @@ class Game {
 		}
 	}
 	readyPlayer(id) {
-		for (let player of this.players) {
+		let player = this.getPlayer(id);
+		player.toggleReady();
+		/*for (let player of this.players) {
 			if (player.id == id) {
 					player.toggleReady()
 					console.log("toggle")
 			}
-		}
+		}*/
 		this.isReady();
 	}
 	debugPlayers() {
@@ -79,6 +83,10 @@ class Game {
 			this.clientData.push(player.getStats());
 		}
 		return this.clientData;
+	}
+	getCards(id) {
+		let player = this.getPlayer(id)
+		return player.showHand();
 	}
 }
 
