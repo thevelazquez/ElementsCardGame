@@ -61,7 +61,16 @@ const playerQuerry = (name) => {
 const showCards = () => {
   handDiv.innerHTML = "";
   for (let card in myHand) {
-    handDiv.innerHTML += "<div class='cards'>" + myHand[card] + "</div>";
+    findImg(myHand[card]);
+  }
+}
+const findImg = (card) => {
+  for (let i in cards) {
+    if (card == cards[i]) {
+      const img = new Image(168,224);
+      img.src = route + src[i] + '.png';
+      handDiv.appendChild(img);
+    }
   }
 }
 
@@ -115,3 +124,7 @@ socket.on('gameStart', () => {
   remove(playersDiv);
   getCards();
 })
+
+const route = 'imgs/'
+const cards = ['Fire Basic', 'Wind Basic', 'Water Basic', 'Fire Transition', 'Wind Transition', 'Water Transition', 'Fire Attack', 'Wind Attack', 'Water Attack', 'Fire Special', 'Wind Special', 'Water Special', 'Light Wild', 'Dark Wild'];
+const src = ['basic-1-fire', 'basic-3-wind', 'basic-2-water', 'c-3-wind', 'c-2-water', 'c-1-fire', 'atk-1-fire', 'atk-3-wind', 'atk-2-water', 'sp-1-fire', 'sp-3-wind', 'sp-2-water', 'wild-7-light', 'wild-8-dark'];
