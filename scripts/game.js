@@ -10,16 +10,7 @@ class Game {
 		this.ready = false;
 		console.log("A game has started!\nWaiting for players...");
 	}
-	addPlayer(plyr,id) {
-		if (this.players.length < 8) {
-			const player = new Player();
-			player.setName(plyr);
-			player.setId(id);
-			this.players.push(player);
-		} else {
-			console.log("The game is full");
-		}
-	}
+
 	listPlayers() {
 		let players = [];
 		for (let player of this.players) {
@@ -54,24 +45,6 @@ class Game {
 			this.dealCards();
 		}
 	}
-	getPlayer(id) {
-		for (let player of this.players) {
-			if (player.id == id) {
-				return player;
-			}
-		}
-	}
-	readyPlayer(id) {
-		let player = this.getPlayer(id);
-		player.toggleReady();
-		/*for (let player of this.players) {
-			if (player.id == id) {
-					player.toggleReady()
-					console.log("toggle")
-			}
-		}*/
-		this.isReady();
-	}
 	debugPlayers() {
 		for (let player of this.players) {
 			console.log(player);
@@ -84,10 +57,41 @@ class Game {
 		}
 		return this.clientData;
 	}
+
+	//client specific
+	addPlayer(plyr, id) {
+		if (this.players.length < 8) {
+			const player = new Player();
+			player.setName(plyr);
+			player.setId(id);
+			this.players.push(player);
+		} else {
+			console.log("The game is full");
+		}
+	}
+	getName(id) {
+		let player = this.getPlayer(id);
+		return player.name();
+	}
 	getCards(id) {
-		let player = this.getPlayer(id)
+		let player = this.getPlayer(id);
 		return player.showHand();
 	}
+	readyPlayer(id) {
+		let player = this.getPlayer(id);
+		player.toggleReady();
+		this.isReady();
+	}
+	getPlayer(id) {
+		for (let player of this.players) {
+			if (player.id == id) {
+				return player;
+			}
+		}
+	}
+
+	//Game rules
+
 }
 
 const deck = new Deck();

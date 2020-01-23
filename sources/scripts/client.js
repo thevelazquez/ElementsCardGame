@@ -69,9 +69,17 @@ const findImg = (card) => {
     if (card == cards[i]) {
       const img = new Image(168,224);
       img.src = route + src[i] + '.png';
+      img.className += 'cards';
       handDiv.appendChild(img);
     }
   }
+}
+const showPlayers = () => {
+  //exclude the client player
+
+  //loop through player data
+    //construct player data div
+    //Append player data to '#game-stats'
 }
 
 //socket.emit functions
@@ -123,6 +131,7 @@ socket.on('cardDelivery', (cards) => {
 socket.on('gameStart', () => {
   remove(playersDiv);
   getCards();
+  //showPlayers();
 })
 
 const route = 'imgs/'
