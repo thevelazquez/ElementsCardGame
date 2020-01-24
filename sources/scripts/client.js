@@ -4,13 +4,16 @@ const nameInput = document.getElementById('entry');
 const nameSubmit = document.getElementById('submitName');
 const entry = document.getElementById('entryBox');
 const playersDiv = document.getElementById('playerList');
+const startDiv = document.getElementById('start-phase');
 const handDiv = document.getElementById('hand');
+const statsDiv = document.getElementById('game-stats');
 let socket = io.connect(`http://${ip}`);
 let submitable = false;
 let name = () => {return nameInput.value};
 let myHand = {};
 let playerList = [];
 let playerData = [];
+let pName;
 let playerDiv = document.getElementById("playerHolder");
 
 let fixWidth = () => {
@@ -41,7 +44,7 @@ const remove = (elem) => {
     },1000)
   },200);
 }
-const update = () => {
+const rdyUpdate = () => {
   let playerQ = document.getElementsByClassName('players');
   for (player of playerQ) {
     if (playerQuerry(player.innerHTML).status) {
@@ -70,21 +73,26 @@ const findImg = (card) => {
       const img = new Image(168,224);
       img.src = route + src[i] + '.png';
       img.className += 'cards';
+      img.addEventListener('click', () => {select(cards[i])})
       handDiv.appendChild(img);
     }
   }
 }
-const showPlayers = () => {
-  //exclude the client player
+const displayPlayers = () => {
+  statsDiv.innerHTML = "";
 
-  //loop through player data
-    //construct player data div
-    //Append player data to '#game-stats'
+  for (let player of playerData) {
+    if (player.name == pName) {
+      continue;
+    } else {
+      statsDiv.innerHTML += "<div class='player-stats'>" + player.name + " has " + player.handCount + " cards.</div>"
+    }
+  }
 }
 
 //socket.emit functions
 const submitName = () => {
-  let pName = name();
+  pName = name();
   if (submitable && name() != "") {
     submitable = false;
     socket.emit('name', pName);
@@ -98,6 +106,16 @@ const toggleReady = () => {
 }
 const getCards = () => {
   socket.emit('getCards', sessionId);
+}
+const showPlayers = () => {
+  socket.emit('getPlayers');
+}
+const update = () => {
+  getCards();
+  showPlayers();
+}
+const select = (card) => {
+  console.log(card);
 }
 
 //socket event listeners
@@ -113,9 +131,9 @@ socket.on('getId', (id) => {
   localStorage.setItem('sessionId', id);
   window.alert("Please copy your session ID:\n" + localStorage.getItem('sessionId') + "\n\n(You may need this to join back)");
 })
-socket.on('update', (data) => {
+socket.on('rdyUpdate', (data) => {
   playerData = data;
-  update();
+  rdyUpdate();
 })
 socket.on('getPlayers', (players) =>{
   playerList = players;
@@ -124,14 +142,18 @@ socket.on('getPlayers', (players) =>{
     playerDiv.innerHTML += "<div class='players'>" + playerList[player] + "</div>";
   }
 })
+
+socket.on('playerDelivery', (players) => {
+  playerData = players;
+  displayPlayers();
+})
 socket.on('cardDelivery', (cards) => {
   myHand = cards;
   showCards();
 })
 socket.on('gameStart', () => {
-  remove(playersDiv);
-  getCards();
-  //showPlayers();
+  remove(startDiv);
+  update();
 })
 
 const route = 'imgs/'

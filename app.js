@@ -35,14 +35,21 @@ io.on('connection', function(socket){
 	}
 	socket.on('isReady', (id) => {
 		game.readyPlayer(id);
-		io.sockets.emit('update', game.getClientData())
+		io.sockets.emit('rdyUpdate', game.getClientData())
 		//console.log(game.debugPlayers())
 		if (game.ready) {
 			io.sockets.emit('gameStart');
 		}
 	})
 	socket.on('getCards', (id) => {
-		let hand = game.getCards(id);
-		socket.emit('cardDelivery',hand);
+		if (game.ready) {
+			let hand = game.getCards(id);
+			socket.emit('cardDelivery',hand);
+		}
+	})
+	socket.on('getPlayers', () => {
+		if (game.ready) {
+			socket.emit('playerDelivery', game.getClientData())
+		}
 	})
 });
