@@ -4,8 +4,9 @@ const Player = require('./player.js');
 class Game {
 	constructor() {
 		this.players = [];
-		this.turn = [];
 		this.clientData = [];
+		this.turn = [];
+		this.gamePile = [];
 		this.started = false;
 		this.ready = false;
 		console.log("A game has started!\nWaiting for players...");
@@ -43,6 +44,7 @@ class Game {
 		if (this.ready) {
 			console.log("The game is ready!");
 			this.dealCards();
+			this.gamePile.push(deck.draw());
 		}
 	}
 	debugPlayers() {
