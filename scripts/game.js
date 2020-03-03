@@ -91,6 +91,12 @@ class Game {
 			}
 		}
 	}
+	getGameData() {
+		return {
+			activeCard: this.gamePile[this.gamePile.length-1],
+			deckCount: deck.count()
+		}
+	}
 
 	//Game rules
 

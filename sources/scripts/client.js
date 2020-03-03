@@ -7,10 +7,12 @@ const playersDiv = document.getElementById('playerList');
 const startDiv = document.getElementById('start-phase');
 const handDiv = document.getElementById('hand');
 const statsDiv = document.getElementById('game-stats');
+const activeCardDiv = document.getElementById('activeCard');
 let socket = io.connect(`http://${ip}`);
 let submitable = false;
 let name = () => {return nameInput.value};
 let myHand = {};
+let gameData = {};
 let playerList = [];
 let playerData = [];
 let pName;
@@ -64,17 +66,18 @@ const playerQuerry = (name) => {
 const showCards = () => {
   handDiv.innerHTML = "";
   for (let card in myHand) {
-    findImg(myHand[card]);
+    let img = findImg(myHand[card],168,224);
+    img.addEventListener('click', () => {select(myHand[card])})
+    handDiv.appendChild(img);
   }
 }
-const findImg = (card) => {
+const findImg = (card,width,height) => {
   for (let i in cards) {
     if (card == cards[i]) {
-      const img = new Image(168,224);
+      const img = new Image(width,height);
       img.src = route + src[i] + '.png';
       img.className += 'cards';
-      img.addEventListener('click', () => {select(cards[i])})
-      handDiv.appendChild(img);
+      return img;
     }
   }
 }
@@ -85,9 +88,15 @@ const displayPlayers = () => {
     if (player.name == pName) {
       continue;
     } else {
-      statsDiv.innerHTML += "<div class='player-stats'>" + player.name + " has " + player.handCount + " cards.</div>"
+      statsDiv.innerHTML += "<div class='player-stats'>" + player.name + " has " + player.handCount + " cards.</div>";
     }
   }
+}
+const showGameData = () => {
+  activeCardDiv.innerHTML = "";
+  let img = findImg(gameData.activeCard,168,224);
+  activeCardDiv.appendChild(img);
+  activeCardDiv.innerHTML += "<br />There are currentlty " + gameData.deckCount + " cards left.";
 }
 
 //socket.emit functions
@@ -110,12 +119,16 @@ const getCards = () => {
 const showPlayers = () => {
   socket.emit('getPlayers');
 }
+const getGameData = () => {
+  socket.emit('getGameData');
+}
 const update = () => {
   getCards();
   showPlayers();
+  getGameData();
 }
 const select = (card) => {
-  console.log(card);
+  socket.emit('card',card)
 }
 
 //socket event listeners
@@ -150,6 +163,10 @@ socket.on('playerDelivery', (players) => {
 socket.on('cardDelivery', (cards) => {
   myHand = cards;
   showCards();
+})
+socket.on('recieveGameData', (data) => {
+  gameData = data;
+  showGameData();
 })
 socket.on('gameStart', () => {
   remove(startDiv);

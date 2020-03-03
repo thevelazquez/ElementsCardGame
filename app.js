@@ -52,4 +52,9 @@ io.on('connection', function(socket){
 			socket.emit('playerDelivery', game.getClientData())
 		}
 	})
+	socket.on('getGameData', () => {
+		if (game.ready) {
+			socket.emit('recieveGameData', game.getGameData());
+		}
+	})
 });
