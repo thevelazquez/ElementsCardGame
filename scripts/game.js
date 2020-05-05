@@ -10,6 +10,7 @@ class Game {
 		this.started = false;
 		this.ready = false;
 		this.reverse = false;
+		this.status = "";
 		console.log("A game has started!\nWaiting for players...");
 	}
 
@@ -117,7 +118,9 @@ class Game {
 	getGameData(id) {
 		return {
 			activeCard: this.gamePile[this.gamePile.length-1],
+			status: this.status,
 			deckCount: deck.count(),
+			turn: this.turn,
 			hand: this.getCards(id),
 			players: this.getClientData()
 		}
@@ -127,6 +130,7 @@ class Game {
 	pickTurn() {
 		let lastPlayer = this.players.length - 1;
 		this.turn = Math.floor(Math.random() * lastPlayer);
+		this.status = "It is currently " + this.getTurn().name() + "'s turn.";
 	}
 	//iterates to the next player of the game
 	nextTurn() {
@@ -135,12 +139,14 @@ class Game {
 				this.turn = this.players.length - 1;
 			} else {
 				this.turn--;
+				this.status = "It is currently " + this.getTurn().name() + "'s turn.";
 			}
 		} else {
 			if (this.players[this.players.length] == null) {
 				this.turn = 0;
 			} else {
 				this.turn++;
+				this.status = "It is currently " + this.getTurn().name() + "'s turn.";
 			}
 		}
 	}

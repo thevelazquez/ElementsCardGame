@@ -5,6 +5,14 @@ body {
 	user-select: none;
 	background-color: rgb(100,100,100);
 }
+#meta {
+	position: fixed;
+	width: 100vw;
+	background-color: white;
+	font-size: 12px;
+	text-align: center;
+	padding: 4px;
+}
 #game {
 	display: flex;
 	align-items: center;
@@ -70,6 +78,9 @@ body {
 }
 .player-stats {
 	text-align: center;
+	padding: 4px;
+	margin: 5px;
+	background-color: rgb(200,200,200);
 }
 
 .players {

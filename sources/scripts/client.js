@@ -1,6 +1,7 @@
 //change ip to the host ip
 const ip = `localhost:4000`;
 let socket = io.connect(`http://${ip}`);
+
 //Establish div references
 const nameInput = document.getElementById('entry');
 const nameSubmit = document.getElementById('submitName');
@@ -10,14 +11,17 @@ const startDiv = document.getElementById('start-phase');
 const handDiv = document.getElementById('hand');
 const statsDiv = document.getElementById('game-stats');
 const activeCardDiv = document.getElementById('activeCard');
+const playerDiv = document.getElementById('playerHolder');
+const metaDiv = document.getElementById('meta');
+
 //Establish dynamic variables
 let submitable = false;
 let name = () => {return nameInput.value};
-let playerDiv = document.getElementById("playerHolder");
-
 let gameData = {
   activeCard: "",
+  status: "",
   deckCount: 0,
+  turn: 0,
   hand: [],
   players: []
 };
@@ -114,6 +118,7 @@ const displayPlayers = () => {
 //updates all game data
 const showGameData = () => {
   activeCardDiv.innerHTML = "";
+  metaDiv.innerHTML = gameData.status;
   let img = findImg(gameData.activeCard,168,224);
   activeCardDiv.appendChild(img);
   activeCardDiv.innerHTML += "<br />There are currentlty " + gameData.deckCount + " cards left.";
@@ -150,6 +155,7 @@ const select = (card) => {
   console.log(card);
 }
 
+
 //socket event listeners
 socket.on('noName', () => {
   window.alert("Not a proper name.\nYour entry has not been made.")
@@ -163,7 +169,8 @@ socket.on('getId', (id) => {
   localStorage.setItem('sessionId', id);
   window.alert("Please copy your session ID:\n" + localStorage.getItem('sessionId') + "\n\n(You may need this to join back)");
 })
-//called when a player updates their ready status
+
+//called when a player broadcasts their ready status
 socket.on('rdyUpdate', (data) => {
   gameData.players = data;
   rdyUpdate();
@@ -176,7 +183,6 @@ socket.on('getPlayers', (players) =>{
     playerDiv.innerHTML += "<div class='players'>" + gameData.players[player] + "</div>";
   }
 })
-
 //Obtains all game data
 socket.on('recieveGameData', (data) => {
   gameData = data;
