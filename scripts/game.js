@@ -5,13 +5,15 @@ class Game {
 	constructor() {
 		this.players = [];
 		this.clientData = [];
-		this.turn = [];
+		this.turn = 0;
 		this.gamePile = [];
 		this.started = false;
 		this.ready = false;
+		this.reverse = false;
 		console.log("A game has started!\nWaiting for players...");
 	}
 
+	//constructs and returns an array of all player names
 	listPlayers() {
 		let players = [];
 		for (let player of this.players) {
@@ -19,6 +21,8 @@ class Game {
 		}
 		return players;
 	}
+
+	//deals 7 cards to each player
 	dealCards() {
 		for (let i = 0; i<7; i++) {
 			for (let player of this.players) {
@@ -27,6 +31,8 @@ class Game {
 		}
 		console.log(`The deck now contains ${deck.count()} cards`);
 	}
+
+	//checks if the game is ready begin
 	isReady() {
 		if (this.players.length > 2) {
 			for (let player of this.players) {
@@ -45,13 +51,19 @@ class Game {
 			console.log("The game is ready!");
 			this.dealCards();
 			this.gamePile.push(deck.draw());
+			this.pickTurn();
+			console.log("It is currently " + this.getTurn().name() + "'s turn.");
 		}
 	}
+
+	//logs all player objects
 	debugPlayers() {
 		for (let player of this.players) {
 			console.log(player);
 		}
 	}
+
+	//Packs and sends all the necessary information to each client
 	getClientData() {
 		this.clientData = [];
 		for (let player of this.players) {
@@ -98,7 +110,39 @@ class Game {
 		}
 	}
 
-	//Game rules
+	//randomly select a player to start the game
+	pickTurn() {
+		let lastPlayer = this.players.length - 1;
+		this.turn = Math.floor(Math.random() * lastPlayer);
+	}
+	//iterates to the next player of the game
+	nextTurn() {
+		if (this.reverse) {
+			if (this.turn == 0) {
+				this.turn = this.players.length - 1;
+			} else {
+				this.turn--;
+			}
+		} else {
+			if (this.players[this.players.length] == null) {
+				this.turn = 0;
+			} else {
+				this.turn++;
+			}
+		}
+	}
+	//Returns the player of the current turn
+	getTurn() {
+		return this.players[this.turn];
+	}
+	//checks if the given player maches the player of the current turn
+	checkTurn(id) {
+		let turn = false
+		if (id == getTurn().id) {
+			turn = true;
+		}
+		return turn;
+	}
 
 }
 
