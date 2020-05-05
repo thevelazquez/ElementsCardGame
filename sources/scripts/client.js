@@ -13,8 +13,13 @@ const activeCardDiv = document.getElementById('activeCard');
 //Establish dynamic variables
 let submitable = false;
 let name = () => {return nameInput.value};
-let myHand = {};
-let gameData = {};
+let myHand = [];
+let gameData = {
+  activeCard: "",
+  deckCount: 0,
+  hand: [],
+  players: []
+};
 let playerList = [];
 let playerData = [];
 let pName;
@@ -67,7 +72,7 @@ const rdyUpdate = () => {
 }
 //playerQuerry() is used to easily gather the object of a specified player
 const playerQuerry = (name) => {
-  for (playerObj of playerData) {
+  for (playerObj of gameData.players) {
     if (name == playerObj.name) {
       return playerObj;
     }
@@ -109,12 +114,16 @@ const displayPlayers = () => {
   }
 }
 
-//Currently, displays the active card and number of cards left in the deck
+//updates all game data
 const showGameData = () => {
+  playerData = gameData.players;
+  myHand = gameData.hand;
   activeCardDiv.innerHTML = "";
   let img = findImg(gameData.activeCard,168,224);
   activeCardDiv.appendChild(img);
   activeCardDiv.innerHTML += "<br />There are currentlty " + gameData.deckCount + " cards left.";
+  displayPlayers();
+  showCards();
 }
 
 //socket.emit functions
@@ -134,18 +143,10 @@ const toggleReady = () => {
   //sessionId will be saved in localStorage to aid unwated disconnects
   //socket.emit('isReady', localStorage.getItem('sessionId'));
 }
-const getCards = () => {
-  socket.emit('getCards', sessionId);
-}
-const showPlayers = () => {
-  socket.emit('getPlayers');
-}
 const getGameData = () => {
-  socket.emit('getGameData');
+  socket.emit('getGameData', sessionId);
 }
 const update = () => {
-  getCards();
-  showPlayers();
   getGameData();
 }
 
@@ -169,9 +170,10 @@ socket.on('getId', (id) => {
   window.alert("Please copy your session ID:\n" + localStorage.getItem('sessionId') + "\n\n(You may need this to join back)");
 })
 socket.on('rdyUpdate', (data) => {
-  playerData = data;
+  gameData.players = data;
   rdyUpdate();
 })
+//USED AT THE BEGINNING OF THE GAME
 socket.on('getPlayers', (players) =>{
   playerList = players;
   playerDiv.innerHTML = "";
@@ -180,14 +182,7 @@ socket.on('getPlayers', (players) =>{
   }
 })
 
-socket.on('playerDelivery', (players) => {
-  playerData = players;
-  displayPlayers();
-})
-socket.on('cardDelivery', (cards) => {
-  myHand = cards;
-  showCards();
-})
+//Obtains all game data
 socket.on('recieveGameData', (data) => {
   gameData = data;
   showGameData();

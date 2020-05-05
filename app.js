@@ -41,20 +41,9 @@ io.on('connection', function(socket){
 			io.sockets.emit('gameStart');
 		}
 	})
-	socket.on('getCards', (id) => {
+	socket.on('getGameData', (id) => {
 		if (game.ready) {
-			let hand = game.getCards(id);
-			socket.emit('cardDelivery',hand);
-		}
-	})
-	socket.on('getPlayers', () => {
-		if (game.ready) {
-			socket.emit('playerDelivery', game.getClientData())
-		}
-	})
-	socket.on('getGameData', () => {
-		if (game.ready) {
-			socket.emit('recieveGameData', game.getGameData());
+			socket.emit('recieveGameData', game.getGameData(id));
 		}
 	})
 });

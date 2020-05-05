@@ -83,19 +83,28 @@ class Game {
 			console.log("The game is full");
 		}
 	}
-	getName(id) {
+
+	//currently not in use
+	/*getName(id) {
 		let player = this.getPlayer(id);
 		return player.name();
-	}
+	}*/
+
+	//refreshes the client player's hand
 	getCards(id) {
 		let player = this.getPlayer(id);
 		return player.showHand();
 	}
+
+	//toggles the readiness of a player
+	//tells the game to check if it can start
 	readyPlayer(id) {
 		let player = this.getPlayer(id);
 		player.toggleReady();
 		this.isReady();
 	}
+
+	//Querries a player by id
 	getPlayer(id) {
 		for (let player of this.players) {
 			if (player.id == id) {
@@ -103,10 +112,14 @@ class Game {
 			}
 		}
 	}
-	getGameData() {
+
+	//Returns all data related to the game for the specified client
+	getGameData(id) {
 		return {
 			activeCard: this.gamePile[this.gamePile.length-1],
-			deckCount: deck.count()
+			deckCount: deck.count(),
+			hand: this.getCards(id),
+			players: this.getClientData()
 		}
 	}
 
