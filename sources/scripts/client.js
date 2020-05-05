@@ -13,17 +13,14 @@ const activeCardDiv = document.getElementById('activeCard');
 //Establish dynamic variables
 let submitable = false;
 let name = () => {return nameInput.value};
-let myHand = [];
+let playerDiv = document.getElementById("playerHolder");
+
 let gameData = {
   activeCard: "",
   deckCount: 0,
   hand: [],
   players: []
 };
-let playerList = [];
-let playerData = [];
-let pName;
-let playerDiv = document.getElementById("playerHolder");
 
 //fix the width of the entry box for smooth styling
 let fixWidth = () => {
@@ -82,9 +79,9 @@ const playerQuerry = (name) => {
 //Visually updates the client's hand
 const showCards = () => {
   handDiv.innerHTML = "";
-  for (let card in myHand) {
-    let img = findImg(myHand[card],168,224);
-    img.addEventListener('click', () => {select(myHand[card])})
+  for (let card in gameData.hand) {
+    let img = findImg(gameData.hand[card],168,224);
+    img.addEventListener('click', () => {select(gameData.hand[card])})
     handDiv.appendChild(img);
   }
 }
@@ -105,8 +102,8 @@ const findImg = (card,width,height) => {
 const displayPlayers = () => {
   statsDiv.innerHTML = "";
 
-  for (let player of playerData) {
-    if (player.name == pName) {
+  for (let player of gameData.players) {
+    if (player.name == name()) {
       continue;
     } else {
       statsDiv.innerHTML += "<div class='player-stats'>" + player.name + " has " + player.handCount + " cards.</div>";
@@ -116,8 +113,6 @@ const displayPlayers = () => {
 
 //updates all game data
 const showGameData = () => {
-  playerData = gameData.players;
-  myHand = gameData.hand;
   activeCardDiv.innerHTML = "";
   let img = findImg(gameData.activeCard,168,224);
   activeCardDiv.appendChild(img);
@@ -128,10 +123,9 @@ const showGameData = () => {
 
 //socket.emit functions
 const submitName = () => {
-  pName = name();
   if (submitable && name() != "") {
     submitable = false;
-    socket.emit('name', pName);
+    socket.emit('name', name());
     remove(entry);
   }
 }
@@ -169,16 +163,17 @@ socket.on('getId', (id) => {
   localStorage.setItem('sessionId', id);
   window.alert("Please copy your session ID:\n" + localStorage.getItem('sessionId') + "\n\n(You may need this to join back)");
 })
+//called when a player updates their ready status
 socket.on('rdyUpdate', (data) => {
   gameData.players = data;
   rdyUpdate();
 })
 //USED AT THE BEGINNING OF THE GAME
 socket.on('getPlayers', (players) =>{
-  playerList = players;
+  gameData.players = players;
   playerDiv.innerHTML = "";
-  for (let player in playerList) {
-    playerDiv.innerHTML += "<div class='players'>" + playerList[player] + "</div>";
+  for (let player in gameData.players) {
+    playerDiv.innerHTML += "<div class='players'>" + gameData.players[player] + "</div>";
   }
 })
 
