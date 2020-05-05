@@ -1,6 +1,8 @@
 class Player {
 	constructor() {
 		this.hand = [];
+		this.ready = false;
+		this.id = "";
 		this.playerName = "";
 	}
 	draw(card) {
@@ -27,6 +29,24 @@ class Player {
 	setName(name) {
 		this.playerName = name;
 	}
+	setId(id) {
+		this.id = id;
+	}
+	toggleReady() {
+		if (this.ready) {
+			this.ready = false
+		} else {
+			this.ready = true
+		}
+	}
+	getStats() {
+		let count = this.handCount();
+		return {
+			name: this.playerName,
+			status: this.ready,
+			handCount: count
+		}
+	}
 }
 
-//module.exports = Player
+module.exports = Player
