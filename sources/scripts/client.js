@@ -1,5 +1,7 @@
 //change ip to the host ip
 const ip = `localhost:4000`;
+let socket = io.connect(`http://${ip}`);
+//Establish div references
 const nameInput = document.getElementById('entry');
 const nameSubmit = document.getElementById('submitName');
 const entry = document.getElementById('entryBox');
@@ -8,7 +10,7 @@ const startDiv = document.getElementById('start-phase');
 const handDiv = document.getElementById('hand');
 const statsDiv = document.getElementById('game-stats');
 const activeCardDiv = document.getElementById('activeCard');
-let socket = io.connect(`http://${ip}`);
+//Establish dynamic variables
 let submitable = false;
 let name = () => {return nameInput.value};
 let myHand = {};
@@ -18,12 +20,15 @@ let playerData = [];
 let pName;
 let playerDiv = document.getElementById("playerHolder");
 
+//fix the width of the entry box for smooth styling
 let fixWidth = () => {
   entry.style.width = ((entry.offsetWidth - 40)+"px");
   entry.style.opacity = "1";
 }
 fixWidth();
 
+//checkInput() is called when a user is typing
+//checks if the current input is valid
 const checkInput = () => {
   if (name() == "") {
     submitable = false;
@@ -36,6 +41,8 @@ const checkInput = () => {
     nameSubmit.style.cursor = "pointer";
   }
 }
+
+//Allows for basic removal of an element
 const remove = (elem) => {
   elem.style.opacity = "0";
   setTimeout(()=>{
@@ -46,6 +53,8 @@ const remove = (elem) => {
     },1000)
   },200);
 }
+
+//rdyUpdate() is called when a user broadcasts that they're ready to start a game
 const rdyUpdate = () => {
   let playerQ = document.getElementsByClassName('players');
   for (player of playerQ) {
@@ -56,6 +65,7 @@ const rdyUpdate = () => {
     }
   }
 }
+//playerQuerry() is used to easily gather the object of a specified player
 const playerQuerry = (name) => {
   for (playerObj of playerData) {
     if (name == playerObj.name) {
@@ -63,6 +73,8 @@ const playerQuerry = (name) => {
     }
   }
 }
+
+//Visually updates the client's hand
 const showCards = () => {
   handDiv.innerHTML = "";
   for (let card in myHand) {
@@ -71,6 +83,8 @@ const showCards = () => {
     handDiv.appendChild(img);
   }
 }
+
+//findImg() querries and constructs a card element
 const findImg = (card,width,height) => {
   for (let i in cards) {
     if (card == cards[i]) {
@@ -81,6 +95,8 @@ const findImg = (card,width,height) => {
     }
   }
 }
+
+//lists all other players in the game
 const displayPlayers = () => {
   statsDiv.innerHTML = "";
 
@@ -92,6 +108,8 @@ const displayPlayers = () => {
     }
   }
 }
+
+//Currently, displays the active card and number of cards left in the deck
 const showGameData = () => {
   activeCardDiv.innerHTML = "";
   let img = findImg(gameData.activeCard,168,224);
@@ -108,9 +126,12 @@ const submitName = () => {
     remove(entry);
   }
 }
+
+//broadcasts whether you are ready or not
 const toggleReady = () => {
   socket.emit('isReady', sessionId);
   //fix later
+  //sessionId will be saved in localStorage to aid unwated disconnects
   //socket.emit('isReady', localStorage.getItem('sessionId'));
 }
 const getCards = () => {
@@ -127,8 +148,11 @@ const update = () => {
   showPlayers();
   getGameData();
 }
+
+//emits a card that the user selected
 const select = (card) => {
-  socket.emit('card',card)
+  socket.emit('card',card);
+  console.log(card);
 }
 
 //socket event listeners
