@@ -145,13 +145,10 @@ const toggleReady = () => {
 const getGameData = () => {
   socket.emit('getGameData', sessionId);
 }
-const update = () => {
-  getGameData();
-}
 
 //emits a card that the user selected
 const select = (card) => {
-  socket.emit('card',card);
+  socket.emit('card', card, sessionId);
   console.log(card);
 }
 
@@ -190,7 +187,10 @@ socket.on('recieveGameData', (data) => {
 })
 socket.on('gameStart', () => {
   remove(startDiv);
-  update();
+  getGameData();
+})
+socket.on('update', () => {
+  getGameData();
 })
 
 const route = 'imgs/'

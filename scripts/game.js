@@ -86,10 +86,10 @@ class Game {
 	}
 
 	//currently not in use
-	/*getName(id) {
+	getName(id) {
 		let player = this.getPlayer(id);
 		return player.name();
-	}*/
+	}
 
 	//refreshes the client player's hand
 	getCards(id) {
@@ -117,7 +117,7 @@ class Game {
 	//Returns all data related to the game for the specified client
 	getGameData(id) {
 		return {
-			activeCard: this.gamePile[this.gamePile.length-1],
+			activeCard: this.getActive(),
 			status: this.status,
 			deckCount: deck.count(),
 			turn: this.turn,
@@ -134,21 +134,27 @@ class Game {
 	}
 	//iterates to the next player of the game
 	nextTurn() {
+		console.log("\nThere are " + this.players.length + " players and the current turn = " + this.turn)
 		if (this.reverse) {
+			console.log("Game is in reverse");
 			if (this.turn == 0) {
+				console.log("setting turn to the last player");
 				this.turn = this.players.length - 1;
 			} else {
+				console.log("subtracting from the turn");
 				this.turn--;
-				this.status = "It is currently " + this.getTurn().name() + "'s turn.";
 			}
 		} else {
-			if (this.players[this.players.length] == null) {
+			console.log("Game is not in reverse ");
+			if (this.players[this.turn + 1] == null) {
+				console.log("setting turn to 0");
 				this.turn = 0;
 			} else {
+				console.log("adding to the turn");
 				this.turn++;
-				this.status = "It is currently " + this.getTurn().name() + "'s turn.";
 			}
 		}
+		this.status = "It is currently " + this.getTurn().name() + "'s turn.";
 	}
 	//Returns the player of the current turn
 	getTurn() {
@@ -157,10 +163,33 @@ class Game {
 	//checks if the given player maches the player of the current turn
 	checkTurn(id) {
 		let turn = false
-		if (id == getTurn().id) {
+		if (id == this.getTurn().id) {
 			turn = true;
 		}
 		return turn;
+	}
+	cardEval(card, id) {
+		let player = this.getPlayer(id);
+		let uType = this.cardType(card);
+		let uElem = this.cardElem(card);
+		let gType = this.cardType(this.getActive());
+		let gElem = this.cardElem(this.getActive());
+		if (uElem == gElem || uType == "Wild") {
+			this.gamePile.push(player.place(card));
+			this.nextTurn();
+			console.log(player.name() + " submitted " + card)
+		} else {
+			console.log(card + " cannot be placed");
+		}
+	}
+	getActive() {
+		return this.gamePile[this.gamePile.length-1]
+	}
+	cardElem(card) {
+		return card.split(" ")[0]
+	}
+	cardType(card) {
+		return card.split(" ")[1]
 	}
 
 }

@@ -46,4 +46,10 @@ io.on('connection', function(socket){
 			socket.emit('recieveGameData', game.getGameData(id));
 		}
 	})
+	socket.on('card', (card, id) => {
+		if (game.checkTurn(id)) {
+			game.cardEval(card, id);
+			io.sockets.emit('update');
+		}
+	})
 });
