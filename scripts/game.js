@@ -11,6 +11,7 @@ class Game {
 		this.ready = false;
 		this.reverse = false;
 		this.status = "";
+		this.attackBuffer = 0;
 		console.log("A game has started!\nWaiting for players...");
 	}
 
@@ -161,12 +162,13 @@ class Game {
 		return this.players[this.turn];
 	}
 	//checks if the given player maches the player of the current turn
-	checkTurn(id) {
-		let turn = false
-		if (id == this.getTurn().id) {
-			turn = true;
+	checkTurn(card, id) {
+		//let turn = false
+		if (id == this.getTurn().id && (this.getPlayer(id).hasCard(card) || card == "Draw")) {
+			//turn = true;
+			return true;
 		}
-		return turn;
+		return false;
 	}
 	cardEval(card, id) {
 		let player = this.getPlayer(id);
@@ -174,9 +176,40 @@ class Game {
 		let uElem = this.cardElem(card);
 		let gType = this.cardType(this.getActive());
 		let gElem = this.cardElem(this.getActive());
-		if (uElem == gElem || uType == "Wild") {
+		if (this.attackBuffer != 0 && (card == "Draw" || uType != "Attack")) {
+			console.log(player.name() + " has been attacked: draw " + this.attackBuffer + " cards.");
+			for (this.attackBuffer; this.attackBuffer > 0; this.attackBuffer--) {
+				player.draw(deck.draw());
+				console.log(player.name() + " draws a card");
+			}
+			if (card == "Draw") {
+				player.draw(deck.draw());
+				console.log(player.name() + " draws a card after attack");
+			}
+		} else if (card == "Draw") {
+				player.draw(deck.draw());
+		} else if (uElem == gElem || uType == "Wild" || (gType == "Attack" && uType == "Attack")) {
+			switch (uType) {
+				case "Basic":
+				console.log("Basic card, nothing happens");
+				this.nextTurn();
+				break;
+				case "Attack":
+				this.attackBuffer++;
+				this.nextTurn();
+				break;
+				case "Transition":
+				this.nexTurn();
+				break;
+				case "Special":
+				this.nextTurn();
+				break;
+				case "Wild":
+				this.nexTurn();
+				break;
+			}
+			//fix player.place() to check if player has the card
 			this.gamePile.push(player.place(card));
-			this.nextTurn();
 			console.log(player.name() + " submitted " + card)
 		} else {
 			console.log(card + " cannot be placed");
