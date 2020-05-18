@@ -211,12 +211,24 @@ class Game {
 				}
 				break;
 				case "Special":
-				this.gamePile.push(player.place(card));
-				this.nextTurn();
+				if (uElem == "Fire") {
+					this.gamePile.push(player.place(card));
+				} else if (uElem == "Wind") {
+					this.gamePile.push(player.place(card));
+					if (this.reverse) {
+						this.reverse = false;
+					} else {
+						this.reverse = true;
+					}
+					this.nextTurn();
+				} else if (uElem == "Water") {
+					this.gamePile.push(player.place(card));
+					this.nextTurn();
+				}
 				break;
 				case "Wild":
 				this.gamePile.push(player.place(card));
-				this.nexTurn();
+				this.nextTurn();
 				break;
 			}
 			//fix player.place() to check if player has the card
