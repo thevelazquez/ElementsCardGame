@@ -182,34 +182,44 @@ class Game {
 				player.draw(deck.draw());
 				console.log(player.name() + " draws a card");
 			}
-			if (card == "Draw") {
-				player.draw(deck.draw());
-				console.log(player.name() + " draws a card after attack");
-			}
 		} else if (card == "Draw") {
 				player.draw(deck.draw());
-		} else if (uElem == gElem || uType == "Wild" || (gType == "Attack" && uType == "Attack")) {
+		} else if (uElem == gElem || uType == "Transition" || uType == "Wild" || (gType == "Attack" && uType == "Attack" && this.attackBuffer != 0)) {
 			switch (uType) {
 				case "Basic":
 				console.log("Basic card, nothing happens");
+				this.gamePile.push(player.place(card));
 				this.nextTurn();
 				break;
 				case "Attack":
 				this.attackBuffer++;
+				this.gamePile.push(player.place(card));
 				this.nextTurn();
 				break;
 				case "Transition":
-				this.nexTurn();
+				if (uElem == "Water" && gElem == "Fire") {
+					this.gamePile.push(player.place(card));
+					this.nextTurn();
+				} else if (uElem == "Fire" && gElem == "Wind") {
+					this.gamePile.push(player.place(card));
+					this.nextTurn();
+				} else if (uElem == "Wind" && gElem == "Water") {
+					this.gamePile.push(player.place(card));
+					this.nextTurn();
+				} else {
+					console.log("Invalid transition card; Cannot be placed");
+				}
 				break;
 				case "Special":
+				this.gamePile.push(player.place(card));
 				this.nextTurn();
 				break;
 				case "Wild":
+				this.gamePile.push(player.place(card));
 				this.nexTurn();
 				break;
 			}
 			//fix player.place() to check if player has the card
-			this.gamePile.push(player.place(card));
 			console.log(player.name() + " submitted " + card)
 		} else {
 			console.log(card + " cannot be placed");
