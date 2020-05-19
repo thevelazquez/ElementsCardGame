@@ -7,9 +7,12 @@ class Game {
 		this.clientData = [];
 		this.turn = 0;
 		this.gamePile = [];
+		this.activeElement = "";
+		this.activeType = "";
 		this.started = false;
 		this.ready = false;
 		this.reverse = false;
+		this.wildMode = false;
 		this.status = "";
 		this.attackBuffer = 0;
 		console.log("A game has started!\nWaiting for players...");
@@ -53,6 +56,7 @@ class Game {
 			console.log("The game is ready!");
 			this.dealCards();
 			this.gamePile.push(deck.draw());
+			this.setActiveAttributes(this.cardType(this.getActive()), this.cardElem(this.getActive()))
 			this.pickTurn();
 			console.log("It is currently " + this.getTurn().name() + "'s turn.");
 		}
@@ -123,7 +127,8 @@ class Game {
 			deckCount: deck.count(),
 			turn: this.turn,
 			hand: this.getCards(id),
-			players: this.getClientData()
+			players: this.getClientData(),
+			activeElement: this.activeElement
 		}
 	}
 
@@ -163,9 +168,8 @@ class Game {
 	}
 	//checks if the given player maches the player of the current turn
 	checkTurn(card, id) {
-		//let turn = false
-		if (id == this.getTurn().id && (this.getPlayer(id).hasCard(card) || card == "Draw")) {
-			//turn = true;
+		const exception = ['Draw', 'Fire', 'Water', 'Wind'];
+		if (id == this.getTurn().id && (this.getPlayer(id).hasCard(card) || exception.indexOf(card) != -1)) {
 			return true;
 		}
 		return false;
@@ -174,9 +178,22 @@ class Game {
 		let player = this.getPlayer(id);
 		let uType = this.cardType(card);
 		let uElem = this.cardElem(card);
+		//parse the card on the top of the game pile
 		let gType = this.cardType(this.getActive());
 		let gElem = this.cardElem(this.getActive());
-		if (this.attackBuffer != 0 && (card == "Draw" || uType != "Attack")) {
+		let getActiveElement = () => {return this.activeElement};
+		let getActiveType = () => {return this.activeType};
+
+		const elements = ['Fire', 'Water', 'Wind'];
+		if (this.wildMode) {
+			if (elements.indexOf(card) != -1) {
+				this.activeElement = card;
+				this.wildMode = false;
+				this.nextTurn();
+			} else {
+				console.log("Wild mode is active, plesase select an element");
+			}
+		} else if (this.attackBuffer != 0 && (card == "Draw" || uType != "Attack")) {
 			console.log(player.name() + " has been attacked: draw " + this.attackBuffer + " cards.");
 			for (this.attackBuffer; this.attackBuffer > 0; this.attackBuffer--) {
 				player.draw(deck.draw());
@@ -184,7 +201,7 @@ class Game {
 			}
 		} else if (card == "Draw") {
 				player.draw(deck.draw());
-		} else if (uElem == gElem || uType == "Transition" || uType == "Wild" || (gType == "Attack" && uType == "Attack" && this.attackBuffer != 0)) {
+		} else if (uElem == getActiveElement() || uType == "Transition" || uType == "Wild" || (getActiveType() == "Attack" && uType == "Attack" && this.attackBuffer != 0)) {
 			switch (uType) {
 				case "Basic":
 				console.log("Basic card, nothing happens");
@@ -197,13 +214,13 @@ class Game {
 				this.nextTurn();
 				break;
 				case "Transition":
-				if (uElem == "Water" && gElem == "Fire") {
+				if (uElem == "Water" && getActiveElement() == "Fire") {
 					this.gamePile.push(player.place(card));
 					this.nextTurn();
-				} else if (uElem == "Fire" && gElem == "Wind") {
+				} else if (uElem == "Fire" && getActiveElement() == "Wind") {
 					this.gamePile.push(player.place(card));
 					this.nextTurn();
-				} else if (uElem == "Wind" && gElem == "Water") {
+				} else if (uElem == "Wind" && getActiveElement() == "Water") {
 					this.gamePile.push(player.place(card));
 					this.nextTurn();
 				} else {
@@ -223,18 +240,21 @@ class Game {
 					this.nextTurn();
 				} else if (uElem == "Water") {
 					this.gamePile.push(player.place(card));
-					this.nextTurn();
+					this.wildMode = true;
 				}
 				break;
 				case "Wild":
 				this.gamePile.push(player.place(card));
-				this.nextTurn();
+				this.wildMode = true;
 				break;
 			}
 			//fix player.place() to check if player has the card
 			console.log(player.name() + " submitted " + card)
+			this.setActiveAttributes(uType, uElem);
 		} else {
 			console.log(card + " cannot be placed");
+			console.log("Active type: " + getActiveType());
+			console.log("Active Element: " + getActiveElement());
 		}
 	}
 	getActive() {
@@ -245,6 +265,16 @@ class Game {
 	}
 	cardType(card) {
 		return card.split(" ")[1]
+	}
+	setActiveAttributes(type, element) {
+		console.log("Setting attributes: " + type + " " + element)
+
+		this.activeType = type;
+		this.activeElement = element;
+
+		console.log("Active attributes set...")
+		console.log("Active type: " + this.activeType)
+		console.log("Active Element: " + this.activeElement)
 	}
 
 }
