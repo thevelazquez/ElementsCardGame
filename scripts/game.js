@@ -128,7 +128,16 @@ class Game {
 			turn: this.turn,
 			hand: this.getCards(id),
 			players: this.getClientData(),
-			activeElement: this.activeElement
+			activeElement: this.activeElement,
+			wild: this.wildCheck(id)
+		}
+	}
+
+	wildCheck(id) {
+		if (this.getTurn().id == id && this.wildMode) {
+			return true;
+		} else {
+			return false;
 		}
 	}
 

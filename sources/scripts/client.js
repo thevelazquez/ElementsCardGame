@@ -13,6 +13,7 @@ const statsDiv = document.getElementById('game-stats');
 const activeCardDiv = document.getElementById('activeCard');
 const playerDiv = document.getElementById('playerHolder');
 const metaDiv = document.getElementById('meta');
+const wildMenu = document.getElementById('wildContainer');
 
 //Establish dynamic variables
 let submitable = false;
@@ -23,13 +24,26 @@ let gameData = {
   deckCount: 0,
   turn: 0,
   hand: [],
-  players: []
+  players: [],
+  activeElement: "",
+  wild: false
 };
+
+//wild select menu
+const wildToggle = () => {
+  console.log("toggle wild")
+  if (wildMenu.style.top == "-100vh") {
+    wildMenu.style.top = "0vh"
+  } else {
+    wildMenu.style.top = "-100vh"
+  }
+}
 
 //fix the width of the entry box for smooth styling
 let fixWidth = () => {
   entry.style.width = ((entry.offsetWidth - 40)+"px");
   entry.style.opacity = "1";
+  wildMenu.style.top = "-100vh";
 }
 fixWidth();
 
@@ -121,9 +135,18 @@ const showGameData = () => {
   metaDiv.innerHTML = gameData.status;
   let img = findImg(gameData.activeCard,168,224);
   activeCardDiv.appendChild(img);
-  activeCardDiv.innerHTML += "<br />There are currentlty " + gameData.deckCount + " cards left.";
+  activeCardDiv.innerHTML += "<br />There are currently " + gameData.deckCount + " cards left.<br />" + gameData.activeElement;
   displayPlayers();
   showCards();
+  checkWild();
+}
+
+const checkWild = () => {
+  if (gameData.wild) {
+    wildMenu.style.top = "0vh";
+  } else {
+    wildMenu.style.top = "-100vh";
+  }
 }
 
 //socket.emit functions
