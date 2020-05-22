@@ -14,6 +14,9 @@ const activeCardDiv = document.getElementById('activeCard');
 const playerDiv = document.getElementById('playerHolder');
 const metaDiv = document.getElementById('meta');
 const wildMenu = document.getElementById('wildContainer');
+const sessionId = () => {
+  return localStorage.getItem('sessionId');
+}
 
 //Establish dynamic variables
 let submitable = false;
@@ -160,18 +163,18 @@ const submitName = () => {
 
 //broadcasts whether you are ready or not
 const toggleReady = () => {
-  socket.emit('isReady', sessionId);
+  socket.emit('isReady', sessionId());
   //fix later
   //sessionId will be saved in localStorage to aid unwated disconnects
   //socket.emit('isReady', localStorage.getItem('sessionId'));
 }
 const getGameData = () => {
-  socket.emit('getGameData', sessionId);
+  socket.emit('getGameData', sessionId());
 }
 
 //emits a card that the user selected
 const select = (card) => {
-  socket.emit('card', card, sessionId);
+  socket.emit('card', card, sessionId());
   console.log(card);
 }
 
@@ -185,9 +188,9 @@ socket.on('lockOut', () => {
 })
 socket.on('getId', (id) => {
   //fix later
-  sessionId = id;
+  //sessionId = id;
   localStorage.setItem('sessionId', id);
-  window.alert("Please copy your session ID:\n" + localStorage.getItem('sessionId') + "\n\n(You may need this to join back)");
+  window.alert("Please copy your session ID:\n" + sessionId() + "\n\n(You may need this to join back)");
 })
 
 //called when a player broadcasts their ready status
