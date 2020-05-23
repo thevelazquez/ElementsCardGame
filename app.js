@@ -20,7 +20,7 @@ io.on('connection', function(socket){
 		console.log('made a connection', socket.id)
 		socket.emit('name');
 		socket.on('name', (name) => {
-			if (name == "" || (typeof name != 'string')) {
+			if (name == "" || (typeof name != 'string') || name.length > 15) {
 				socket.emit('noName');
 			} else {
 				console.log(`${name} has joined the game!`);

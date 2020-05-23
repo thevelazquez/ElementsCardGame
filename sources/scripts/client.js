@@ -178,7 +178,7 @@ const select = (card) => {
 
 //socket event listeners
 socket.on('noName', () => {
-  window.alert("Not a proper name.\nYour entry has not been made.")
+  window.alert("Not a proper name.\nYour entry has not been made.\n\nYour name must adhere to the following:\n- 15 Characters max\n- Must be a string\n- Must contain at least one character")
 })
 socket.on('lockOut', () => {
   window.alert("The game has already begun.\nPlease wait for the next one.")
