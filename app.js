@@ -20,7 +20,7 @@ io.on('connection', function(socket){
 		console.log('made a connection', socket.id)
 		socket.emit('name');
 		socket.on('name', (name) => {
-			if (name == "" || (typeof name != 'string')) {
+			if (name == "" || (typeof name != 'string') || name.length > 15) {
 				socket.emit('noName');
 			} else {
 				console.log(`${name} has joined the game!`);
@@ -41,20 +41,17 @@ io.on('connection', function(socket){
 			io.sockets.emit('gameStart');
 		}
 	})
-	socket.on('getCards', (id) => {
+	socket.on('getGameData', (id) => {
 		if (game.ready) {
-			let hand = game.getCards(id);
-			socket.emit('cardDelivery',hand);
+			socket.emit('recieveGameData', game.getGameData(id));
 		}
 	})
-	socket.on('getPlayers', () => {
+	socket.on('card', (card, id) => {
 		if (game.ready) {
-			socket.emit('playerDelivery', game.getClientData())
-		}
-	})
-	socket.on('getGameData', () => {
-		if (game.ready) {
-			socket.emit('recieveGameData', game.getGameData());
+			if (game.checkTurn(card, id)) {
+				game.cardEval(card, id);
+				io.sockets.emit('update');
+			}
 		}
 	})
 });

@@ -6,11 +6,21 @@
 	<link rel="icon" href="imgs/cardback.png" type="image/x-icon"/ >
 </head>
 <body>
+	<div id="wildContainer">
+		<div id="wildSelect">
+			<img class="Element" src = "imgs/fire.png" onclick = 'select("Fire")'>
+			<img class="Element" src = "imgs/wind.png" onclick = 'select("Wind")'>
+			<img class="Element" src = "imgs/water.png" onclick = 'select("Water")'>
+		</div>
+	</div>
+	<div id="meta">
+		Welcome to Elements!
+	</div>
 	<div id="game">
 		<div id="game-stats">
 		</div>
 		<div id="draw">
-			<img class="cards" src="imgs/cardback.png" height="224" width="160">
+			<img class="cards" src="imgs/cardback.png" height="224" width="160" onclick='select("Draw")'>
 			<div id='activeCard'>
 			</div>
 		</div>
@@ -18,7 +28,7 @@
 			<div id='start-phase'>
 				<div id="entryBox">
 					Enter a name<br />
-					<input id="entry" type="text" value="" oninput="checkInput()">
+					<input id="entry" maxlength="15" type="text" value="" oninput="checkInput()">
 					<div id="btnHolder">
 						<div id="submitName" onclick="submitName()">
 							Enter

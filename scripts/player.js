@@ -23,7 +23,7 @@ class Player {
 			this.hand.splice(i,1);
 			return card;
 		} else {
-			return "Card doesn't exist";
+			console.log(this.name() + " tried placing a card that does not exist in their hand");
 		}
 	}
 	setName(name) {
@@ -46,6 +46,15 @@ class Player {
 			status: this.ready,
 			handCount: count
 		}
+	}
+	hasCard(card) {
+		//let hasCard = false;
+		for (let iCard of this.showHand()) {
+			if (iCard == card) {
+				return true;
+			}
+		}
+		return false
 	}
 }
 

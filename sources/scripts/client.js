@@ -1,6 +1,7 @@
 //change ip to the host ip
 const ip = `localhost:4000`;
 let socket = io.connect(`http://${ip}`);
+
 //Establish div references
 const nameInput = document.getElementById('entry');
 const nameSubmit = document.getElementById('submitName');
@@ -10,20 +11,39 @@ const startDiv = document.getElementById('start-phase');
 const handDiv = document.getElementById('hand');
 const statsDiv = document.getElementById('game-stats');
 const activeCardDiv = document.getElementById('activeCard');
+const playerDiv = document.getElementById('playerHolder');
+const metaDiv = document.getElementById('meta');
+const wildMenu = document.getElementById('wildContainer');
+
 //Establish dynamic variables
 let submitable = false;
 let name = () => {return nameInput.value};
-let myHand = {};
-let gameData = {};
-let playerList = [];
-let playerData = [];
-let pName;
-let playerDiv = document.getElementById("playerHolder");
+let gameData = {
+  activeCard: "",
+  status: "",
+  deckCount: 0,
+  turn: 0,
+  hand: [],
+  players: [],
+  activeElement: "",
+  wild: false
+};
+
+//wild select menu
+const wildToggle = () => {
+  console.log("toggle wild")
+  if (wildMenu.style.top == "-100vh") {
+    wildMenu.style.top = "0vh"
+  } else {
+    wildMenu.style.top = "-100vh"
+  }
+}
 
 //fix the width of the entry box for smooth styling
 let fixWidth = () => {
   entry.style.width = ((entry.offsetWidth - 40)+"px");
   entry.style.opacity = "1";
+  wildMenu.style.top = "-100vh";
 }
 fixWidth();
 
@@ -67,7 +87,7 @@ const rdyUpdate = () => {
 }
 //playerQuerry() is used to easily gather the object of a specified player
 const playerQuerry = (name) => {
-  for (playerObj of playerData) {
+  for (playerObj of gameData.players) {
     if (name == playerObj.name) {
       return playerObj;
     }
@@ -77,9 +97,9 @@ const playerQuerry = (name) => {
 //Visually updates the client's hand
 const showCards = () => {
   handDiv.innerHTML = "";
-  for (let card in myHand) {
-    let img = findImg(myHand[card],168,224);
-    img.addEventListener('click', () => {select(myHand[card])})
+  for (let card in gameData.hand) {
+    let img = findImg(gameData.hand[card],168,224);
+    img.addEventListener('click', () => {select(gameData.hand[card])})
     handDiv.appendChild(img);
   }
 }
@@ -100,8 +120,8 @@ const findImg = (card,width,height) => {
 const displayPlayers = () => {
   statsDiv.innerHTML = "";
 
-  for (let player of playerData) {
-    if (player.name == pName) {
+  for (let player of gameData.players) {
+    if (player.name == name()) {
       continue;
     } else {
       statsDiv.innerHTML += "<div class='player-stats'>" + player.name + " has " + player.handCount + " cards.</div>";
@@ -109,20 +129,31 @@ const displayPlayers = () => {
   }
 }
 
-//Currently, displays the active card and number of cards left in the deck
+//updates all game data
 const showGameData = () => {
   activeCardDiv.innerHTML = "";
+  metaDiv.innerHTML = gameData.status;
   let img = findImg(gameData.activeCard,168,224);
   activeCardDiv.appendChild(img);
-  activeCardDiv.innerHTML += "<br />There are currentlty " + gameData.deckCount + " cards left.";
+  activeCardDiv.innerHTML += "<br />There are currently " + gameData.deckCount + " cards left.<br />" + gameData.activeElement;
+  displayPlayers();
+  showCards();
+  checkWild();
+}
+
+const checkWild = () => {
+  if (gameData.wild) {
+    wildMenu.style.top = "0vh";
+  } else {
+    wildMenu.style.top = "-100vh";
+  }
 }
 
 //socket.emit functions
 const submitName = () => {
-  pName = name();
   if (submitable && name() != "") {
     submitable = false;
-    socket.emit('name', pName);
+    socket.emit('name', name());
     remove(entry);
   }
 }
@@ -134,30 +165,20 @@ const toggleReady = () => {
   //sessionId will be saved in localStorage to aid unwated disconnects
   //socket.emit('isReady', localStorage.getItem('sessionId'));
 }
-const getCards = () => {
-  socket.emit('getCards', sessionId);
-}
-const showPlayers = () => {
-  socket.emit('getPlayers');
-}
 const getGameData = () => {
-  socket.emit('getGameData');
-}
-const update = () => {
-  getCards();
-  showPlayers();
-  getGameData();
+  socket.emit('getGameData', sessionId);
 }
 
 //emits a card that the user selected
 const select = (card) => {
-  socket.emit('card',card);
+  socket.emit('card', card, sessionId);
   console.log(card);
 }
 
+
 //socket event listeners
 socket.on('noName', () => {
-  window.alert("Not a proper name.\nYour entry has not been made.")
+  window.alert("Not a proper name.\nYour entry has not been made.\n\nYour name must adhere to the following:\n- 15 Characters max\n- Must be a string\n- Must contain at least one character")
 })
 socket.on('lockOut', () => {
   window.alert("The game has already begun.\nPlease wait for the next one.")
@@ -168,33 +189,31 @@ socket.on('getId', (id) => {
   localStorage.setItem('sessionId', id);
   window.alert("Please copy your session ID:\n" + localStorage.getItem('sessionId') + "\n\n(You may need this to join back)");
 })
+
+//called when a player broadcasts their ready status
 socket.on('rdyUpdate', (data) => {
-  playerData = data;
+  gameData.players = data;
   rdyUpdate();
 })
+//USED AT THE BEGINNING OF THE GAME
 socket.on('getPlayers', (players) =>{
-  playerList = players;
+  gameData.players = players;
   playerDiv.innerHTML = "";
-  for (let player in playerList) {
-    playerDiv.innerHTML += "<div class='players'>" + playerList[player] + "</div>";
+  for (let player in gameData.players) {
+    playerDiv.innerHTML += "<div class='players'>" + gameData.players[player] + "</div>";
   }
 })
-
-socket.on('playerDelivery', (players) => {
-  playerData = players;
-  displayPlayers();
-})
-socket.on('cardDelivery', (cards) => {
-  myHand = cards;
-  showCards();
-})
+//Obtains all game data
 socket.on('recieveGameData', (data) => {
   gameData = data;
   showGameData();
 })
 socket.on('gameStart', () => {
   remove(startDiv);
-  update();
+  getGameData();
+})
+socket.on('update', () => {
+  getGameData();
 })
 
 const route = 'imgs/'
