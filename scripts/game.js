@@ -204,10 +204,14 @@ class Game {
 			}
 		} else if (this.attackBuffer != 0 && (card == "Draw" || uType != "Attack")) {
 			console.log(player.name() + " has been attacked: draw " + this.attackBuffer + " cards.");
-			for (this.attackBuffer; this.attackBuffer > 0; this.attackBuffer--) {
+			const multiplier = 2;
+			let cards = this.attackBuffer * multiplier;
+			for (cards; cards > 0; cards--) {
 				player.draw(deck.draw());
 				console.log(player.name() + " draws a card");
 			}
+			this.attackBuffer = 0;
+			this.nextTurn();
 		} else if (card == "Draw") {
 				player.draw(deck.draw());
 		} else if (uElem == getActiveElement() || uType == "Transition" || uType == "Wild" || (getActiveType() == "Attack" && uType == "Attack" && this.attackBuffer != 0)) {
