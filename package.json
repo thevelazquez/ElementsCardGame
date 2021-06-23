@@ -18,6 +18,8 @@
   "homepage": "https://github.com/Batman808401/ElementsCardGame#readme",
   "dependencies": {
     "express": "^4.17.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "socket.io": "^2.3.0"
   }
 }
