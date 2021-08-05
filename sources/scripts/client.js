@@ -1,6 +1,10 @@
 //change ip to the host ip
 const ip = `localhost:4000`;
-let socket = io.connect(`http://${ip}`);
+let socket = io.connect(`http://${ip}`, { secure: true, reconnection: true, rejectUnauthorized: false });
+
+socket.on("connect_error", (err) => {
+  console.log(`connect_error due to ${err.message}`);
+});
 
 //Establish div references
 const nameInput = document.getElementById('entry');

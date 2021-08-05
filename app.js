@@ -1,19 +1,19 @@
-var express = require('express');
-var socket = require('socket.io');
+const express = require('express');
+const socket = require('socket.io');
 const Game = require('./scripts/game.js');
 
 const game = new Game();
 
 //app setup
-var app = express();
-var server = app.listen(4000, function(){
+const app = express();
+const server = app.listen(4000, function(){
 	console.log('listening to requests on port 4000');
 });
-
 //Static files
 app.use(express.static('sources'))
 
-var io = socket(server);
+//game hosting
+const io = socket(server);
 io.on('connection', function(socket){
 	socket.emit('getPlayers', game.listPlayers());
 	if (game.started == false) {
